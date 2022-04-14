@@ -21,7 +21,7 @@ class CreateTransaksisTable extends Migration
             $table->date('tgl_pinjam');
             $table->date('tgl_kembali')->nullable();
             $table->enum('status', ['pinjam', 'kembali']);
-            $table->double('denda')->nullable();
+            $table->integer('denda')->nullable();
             $table->timestamps();
 
             $table->foreign('siswa_id')->references('id')->on('siswas')->onUpdate('cascade')->onDelete('cascade');
