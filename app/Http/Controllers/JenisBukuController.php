@@ -37,11 +37,13 @@ class JenisBukuController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            "jenis" => "required|string"
+            "jenis" => "required|string",
+            "denda" => "required|string"
         ]);
 
         $data = new JenisBuku();
         $data->jenis = $request->input('jenis');
+        $data->denda = $request->input('denda');
 
         $data->save();
 
@@ -81,6 +83,7 @@ class JenisBukuController extends Controller
     {
         $data = JenisBuku::find($id);
         $data->jenis = $request->input('jenis');
+        $data->denda = $request->input('denda');
 
         $data->save();
 
@@ -106,7 +109,5 @@ class JenisBukuController extends Controller
     {
         $data = JenisBuku::find($id);
         return response()->json($data);
-
-        // echo json_encode($data); native;
     }
 }

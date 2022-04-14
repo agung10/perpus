@@ -16,6 +16,7 @@ class CreateJenisBukusTable extends Migration
         Schema::create('jenis_bukus', function (Blueprint $table) {
             $table->id();
             $table->string('jenis', 30);
+            $table->double('denda')->nullable();
             $table->timestamps();
         });
     }

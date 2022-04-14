@@ -27,6 +27,18 @@
 
             <div class="row">
                 <div class="col-12">
+                    <div class="alert alert-primary alert-has-icon alert-dismissible show fade">
+                        <div class="alert-icon"><i class="fas fa-info-circle"></i></div>
+                        <div class="alert-body">
+                            <button class="close" data-dismiss="alert">
+                                <span>×</span>
+                            </button>
+                            <div class="alert-title">Info Pengembalian Buku</div>
+                            <span style="font-size: 15px;">
+                                Maksimal pengembalian 3 hari, lebih dari 3 hari akan terkena denda sesuai jenis buku. Untuk <strong>Umum (Rp 1.000)</strong>, <strong>Teknik & Akuntansi (Rp 1.500)</strong>, dan <strong>Kedokteran (Rp 2.000)</strong>
+                            </span>
+                        </div>
+                    </div>
                     <div class="card card-primary">
                         <div class="card-header">
                             <h4>Data Buku Sedang Dipinjam</h4>
@@ -52,12 +64,16 @@
                                     </thead>
                                     <tbody>
                                         @include('layouts.__FUNCTIONS.tanggal_indo')
+                                        @include('layouts.__FUNCTIONS.rupiah')
                                         @foreach ($transaksis as $res)
                                             @php
                                                 $tgl_pinjam = $res->tgl_pinjam;
                                                 $tgl_kembali = date('Y-m-d', strtotime(Carbon\Carbon::today()->addDays(3)->toDateString()));
                                                 $selisih = strtotime($tgl_kembali) - strtotime($tgl_pinjam);
                                                 $hari = abs(round($selisih / 86400));
+                                                $telat = $hari - 3;
+
+                                                $denda = $hari > 3 ? ($telat * $res->buku->jenis_buku->denda) : 0;
                                             @endphp    
                                             <tr>
                                                 <td class="text-center">{{$loop->iteration}}</td>
@@ -79,7 +95,12 @@
                                                         <span class="badge badge-success">{{$res->status}}</span>
                                                     </td>
                                                 @endif
-                                                <td class="text-center">{{$hari - 3}} Hari /</td>
+                                                
+                                                @if (!empty($res->tgl_kembali))
+                                                    <td class="text-center">{{$hari - 3}} Hari / {{rupiah($denda)}}</td>
+                                                @else    
+                                                    <td class="text-center">Belum ada perhitungan</td>
+                                                @endif
                                                 <td>
                                                     <div class="dropdown d-inline">
                                                         <span class="btn btn-sm btn-icon btn-primary dropdown-toggle" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="border-radius: 30px;">
@@ -87,9 +108,9 @@
                                                         </span>
                                                         <div class="dropdown-menu">
                                                             @if ($res->status == "pinjam")
-                                                                <a id="{{$res->id}}" class="dropdown-item has-icon edit" href="#" data-toggle="modal" data-target="#modalKembali"><i class="fas fa-undo"></i>Kembalikan</a>
+                                                                <a id="{{$res->id}}" class="dropdown-item has-icon edit" href="#"><i class="fas fa-undo"></i>Kembalikan</a>
                                                             @endif
-                                                            <a class="dropdown-item has-icon" href="#" data-uri="{{ route('siswa.destroy', $res->id) }}" data-toggle="modal" data-target="#deleteData"><i class="fas fa-trash"></i> Hapus Data</a>
+                                                                <a class="dropdown-item has-icon" href="#" data-uri="{{ route('transaksi.destroy', $res->id) }}" data-toggle="modal" data-target="#deleteData"><i class="fas fa-trash"></i> Hapus Data</a>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -123,42 +144,52 @@
                 <div class="modal-body">
                     <label class="mb-2">Kode Transaksi</label>
                     <div class="form-group">
-                        <input type="text" class="form-control" id="kode_transaksi" name="kode_transaksi" disabled>
+                        <input type="text" class="form-control" id="kode_transaksi" name="kode_transaksi" readonly>
                     </div>
                     
                     <label class="mb-2">Judul Buku</label>
                     <div class="form-group">
-                        <input type="text" class="form-control" id="judul_buku" name="judul_buku" disabled>
+                        <input type="text" class="form-control" id="judul_buku" name="judul_buku" readonly>
                     </div>
 
                     <label class="mb-2">Jenis Buku</label>
                     <div class="form-group">
-                        <input type="text" class="form-control" id="jenis" name="jenis" disabled>
+                        <input type="text" class="form-control" id="jenis" name="jenis" readonly>
                     </div>
 
                     <label class="mb-2">Peminjam</label>
                     <div class="form-group">
-                        <input type="text" class="form-control" id="siswa_id" name="siswa_id" disabled>
+                        <input type="text" class="form-control" id="siswa_nama" name="siswa_nama" readonly>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6">
                             <label class="mb-2">Tanggal Pinjam</label>
                             <div class="form-group">
-                                <input type="text" class="form-control" id="tgl_pinjam" name="tgl_pinjam" disabled>
+                                <input type="text" class="form-control" id="tgl_pinjam" name="tgl_pinjam" readonly>
                             </div>        
                         </div>
                         <div class="col-md-6">
                             <label class="mb-2">Tanggal Kembali</label>
                             <div class="form-group">
-                                <input type="text" class="form-control datepicker" id="tgl_kembali" name="tgl_kembali" value="{{ date('Y-m-d', strtotime(Carbon\Carbon::today()->toDateString())) }}" readonly>
+                                <input type="text" class="form-control datepicker" id="tgl_kembali" name="tgl_kembali" value="{{ date('Y-m-d', strtotime(Carbon\Carbon::today()->addDays(3)->toDateString())) }}" readonly>
                             </div>        
                         </div>
                     </div>
 
-                    <label class="mb-2">Denda</label>
-                    <div class="form-group">
-                        <input type="text" class="form-control" id="denda" name="denda" disabled>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label class="mb-2">Telat</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="telat" name="telat" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <label class="mb-2">Denda</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="denda" name="denda" readonly>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -197,13 +228,13 @@
             success: function(data) {
                 if (data != "") {
                     $('#kode_transaksi').val(data.kode_transaksi);
-                    $('#judul_buku').val(data.judul_buku);
-                    $('#jenis').val(data.jenis);
-                    $('#siswa_id').val(data.siswa_id);
+                    $('#judul_buku').val(data.buku.judul_buku);
+                    $('#jenis').val(data.buku.jenis_buku.jenis);
+                    $('#siswa_nama').val(data.siswa.nama);
                     $('#tgl_pinjam').val(data.tgl_pinjam);
-                    $('#denda').value
-                    console.log(data.denda);
-                    console.log(data.tgl_kembali);
+                    $('#tgl_kembali').val(data.tgl_kembali);
+                    $('#telat').val(data.telat + ' Hari');
+                    $('#denda').val(data.denda);
                     $('#modalPengambalian').click();
                     $('#formPengambalian').attr("action", "{{ url('transaksi/') }}/" + id) + "/update";
                     $('#modalPengambalian').modal("show")

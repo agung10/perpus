@@ -116,6 +116,7 @@ return [
         'email' => 'Email',
         'password' => 'Kata sandi',
         'jenis' => 'Jenis buku',
+        'denda' => 'Denda',
         'kode_buku' => 'Kode buku',
         'judul_buku' => 'Judul buku',
         'jenis_buku_id' => 'Jenis buku',

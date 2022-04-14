@@ -140,7 +140,6 @@
 <script src="{{asset('template/modules/jquery-ui/jquery-ui.min.js')}}"></script>
 
 <!-- Page Specific JS File -->
-<script src="{{asset('template/js/page/index-0.js')}}"></script>
 <script src="{{asset('template/js/page/modules-datatables.js')}}"></script>
 
 <script>

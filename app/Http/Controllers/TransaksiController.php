@@ -20,7 +20,7 @@ class TransaksiController extends Controller
     public function index()
     {
         $data['transaksis'] = Transaksi::orderBy('id', 'DESC')->get();
-        $data['jenis_bukus'] = JenisBuku::all();
+        $data['jenis_bukus'] = JenisBuku::select('jenis')->get();
 
         return view('transaksi.index', $data);
     }
@@ -120,8 +120,6 @@ class TransaksiController extends Controller
         $data->kode_transaksi = $request->input('kode_transaksi');
         $data->tgl_pinjam = $request->input('tgl_pinjam');
         $data->tgl_kembali = $request->input('tgl_kembali');
-        // $data->buku_id = $request->input('buku_id');
-        // $data->siswa_id = $request->input('siswa_id');
         $data->denda = $request->input('denda');
         $data->status = 'kembali';
 
@@ -147,37 +145,17 @@ class TransaksiController extends Controller
 
     public function getDataKembali($id)
     {
-        $data = Transaksi::find($id);
-        $data['jenis_bukus'] = JenisBuku::all();
-        $data->jenis = Buku::with('jenis_buku')->find($id);
+        $data = Transaksi::with('buku.jenis_buku', 'siswa')->find($id);
         
         $data->tgl_kembali = Carbon::now()->addDays(3)->format('Y-m-d');
         $selisih = strtotime($data->tgl_kembali) - strtotime($data->tgl_pinjam);
         $hari = abs(round($selisih / 86400));
+        $data->telat = $hari - 3;
+
+        $denda = $hari > 3 ? ($data->telat * $data->buku->jenis_buku->denda) : 0;
         
-        $denda = 0;
-
-        if ($hari > 3) {
-            foreach ($data['jenis_bukus'] as $jb) {
-                if ($jb->jenis == "Umum"){
-                    $denda = ($hari - 3) * 1000;
-                }
-                elseif ($jb->jenis == "Teknik" || $jb->jenis == "Akuntansi"){
-                    $denda = ($hari - 3) * 1500;
-                }
-                elseif ($jb->jenis == "Kedokteran"){
-                    $denda = ($hari - 3) * 2000;
-                }
-            }
-        }
-
-        // dd($jb->jenis);die;
-        // dd($data['jenis_bukus']->contains('jenis', 'Akuntansi'));die;
-
         $data->denda = $denda;
 
         return response()->json($data);
-
-        // echo json_encode($data); native;
     }
 }

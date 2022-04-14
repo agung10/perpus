@@ -45,6 +45,17 @@
                                             </div>
                                             @enderror
                                         </div>
+
+                                        <div class="form-group">
+                                            <label>Denda</label>
+                                            <input type="text" class="form-control @error('denda') is-invalid @enderror" value="{{ old('denda') }}" autocomplete="denda" name="denda" placeholder="Masukkan denda" onkeypress="return isNumber(event)">
+
+                                            @error('denda')
+                                            <div class="invalid-feedback">
+                                                {{$message}}
+                                            </div>
+                                            @enderror
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -66,18 +77,17 @@
                                         <tr class="text-center">
                                             <th>NO</th>
                                             <th>Nama</th>
-                                            <th>Dibuat</th>
-                                            <th>Diperbarui</th>
+                                            <th>Denda</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @include('layouts.__FUNCTIONS.rupiah')
                                         @foreach ($jenis_bukus as $res)
                                             <tr>
                                                 <td class="text-center">{{$loop->iteration}}</td>
                                                 <td class="text-center">{{$res->jenis}}</td>
-                                                <td class="text-center">{{$res->created_at}}</td>
-                                                <td class="text-center">{{$res->updated_at}}</td>
+                                                <td class="text-center">{{rupiah($res->denda)}}</td>
                                                 <td class="text-center">
                                                     <button id="{{$res->id}}" class="btn btn-sm btn-warning edit"><i class="fas fa-edit"></i></button>
                                                     <button class="btn btn-sm btn-danger" data-uri="{{ route('jenis_buku.destroy', $res->id) }}" data-toggle="modal" data-target="#deleteData"><i class="fas fa-trash"></i></button>
@@ -117,6 +127,14 @@
                             Masukkan jenis buku
                         </div>
                     </div>
+
+                    <label class="mb-2">Denda</label>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="denda" name="denda" onkeypress="return isNumber(event)" required>
+                        <div class="invalid-feedback">
+                            Masukkan denda
+                        </div>
+                    </div>
                 </div>
 
                 <div class="modal-footer bg-whitesmoke br">
@@ -154,6 +172,7 @@
             success: function(data) {
                 if (data != "") {
                     $('#jenis').val(data.jenis);
+                    $('#denda').val(data.denda);
                     $('#modalJenisBukuEdit').click();
                     $('#formEditJenisBuku').attr("action", "{{ url('jenis_buku/') }}/" + id) + "/update";
 
@@ -162,6 +181,15 @@
             }
         })
     })
+
+    function isNumber(evt) {
+        evt = (evt) ? evt : window.event;
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            return false;
+        }
+        return true;
+    }
 </script>
 
 @include('layouts.components.modalDestroy')

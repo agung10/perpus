@@ -68,6 +68,16 @@
 </script>
 @enderror
 
+@error('denda')
+<script>
+    iziToast.error({
+        title: 'Gagal!',
+        message: '{{$message}}',
+        position: 'bottomRight'
+    });
+</script>
+@enderror
+
 @error('kode_buku')
 <script>
     iziToast.error({

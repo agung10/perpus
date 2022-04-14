@@ -134,9 +134,10 @@
             </div>
             <div class="modal-body">
                 <div class="table-responsive">
-                    <table id="lookup" class="table table-hover table-striped" id="table-1">
+                    <table id="table-1" class="table table-hover table-striped table-bordered">
                         <thead>
                             <tr class="text-center">
+                                <th>Nomor</th>
                                 <th>Kode Buku</th>
                                 <th>Judul Buku</th>
                                 <th>Jenis Buku</th>
@@ -145,6 +146,7 @@
                         <tbody>
                             @foreach($bukus as $res)
                             <tr class="pilihBuku" data-buku_id="<?= $res->id; ?>" data-buku_judul="<?= $res->judul_buku; ?>" data-buku_jenis="<?= $res->jenis_buku->jenis; ?>">
+                                <td class="text-center">{{$loop->iteration}}</td>
                                 <td class="text-center">{{$res->kode_buku}}</td>
                                 <td class="text-center">{{$res->judul_buku}}</td>
                                 <td class="text-center">{{$res->jenis_buku->jenis}}</td>
@@ -171,9 +173,10 @@
             </div>
             <div class="modal-body">
                 <div class="table-responsive">
-                    <table id="lookup2" class="table table-hover table-striped" id="table-1">
+                    <table id="table-2" class="table table-hover table-striped table-bordered">
                         <thead>
                             <tr class="text-center">
+                                <th>Nomor</th>
                                 <th>NIS</th>
                                 <th>Nama Lengkap</th>
                                 <th>Jenis Kelamin</th>
@@ -182,6 +185,7 @@
                         <tbody>
                             @foreach($siswas as $res)
                             <tr class="pilihSiswa" data-siswa_id="<?= $res->id; ?>" data-siswa_nama="<?= $res->nama; ?>">
+                                <td class="text-center">{{$loop->iteration}}</td>
                                 <td class="text-center">{{$res->nis}}</td>
                                 <td class="text-center">{{$res->nama}}</td>
                                 <td class="text-center">{{$res->jk}}</td>
@@ -198,6 +202,11 @@
 
 @section('jsLibraries')
 <script src="{{asset('template/modules/bootstrap-daterangepicker/daterangepicker.js')}}"></script>
+<script src="http://localhost:8000/template/modules/datatables/datatables.min.js"></script>
+<script src="http://localhost:8000/template/modules/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js"></script>
+<script src="http://localhost:8000/template/modules/datatables/Select-1.2.4/js/dataTables.select.min.js"></script>
+<script src="http://localhost:8000/template/modules/jquery-ui/jquery-ui.min.js"></script>
+
 <!-- Page Specific JS File -->
 <script src="{{asset('template/js/page/modules-datatables.js')}}"></script>
 
@@ -218,7 +227,7 @@
     });
     
         $(function () {
-        $("#lookup, #lookup2").dataTable();
+        $("#table-1, #table-2").dataTable();
     });
 </script>
 @include('layouts.components.alert')
