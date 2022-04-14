@@ -147,10 +147,14 @@ class TransaksiController extends Controller
     {
         $data = Transaksi::with('buku.jenis_buku', 'siswa')->find($id);
         
-        $data->tgl_kembali = Carbon::now()->addDays(3)->format('Y-m-d');
+        $data->tgl_kembali = Carbon::now()->format('Y-m-d');
         $selisih = strtotime($data->tgl_kembali) - strtotime($data->tgl_pinjam);
         $hari = abs(round($selisih / 86400));
-        $data->telat = $hari - 3;
+        if($hari != 0) {
+            $data->telat = $hari - 3;
+        } else {
+            $data->telat = 0;
+        }
 
         $denda = $hari > 3 ? ($data->telat * $data->buku->jenis_buku->denda) : 0;
         

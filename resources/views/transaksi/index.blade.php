@@ -68,10 +68,14 @@
                                         @foreach ($transaksis as $res)
                                             @php
                                                 $tgl_pinjam = $res->tgl_pinjam;
-                                                $tgl_kembali = date('Y-m-d', strtotime(Carbon\Carbon::today()->addDays(3)->toDateString()));
+                                                $tgl_kembali = date('Y-m-d', strtotime(Carbon\Carbon::today()->toDateString()));
                                                 $selisih = strtotime($tgl_kembali) - strtotime($tgl_pinjam);
                                                 $hari = abs(round($selisih / 86400));
-                                                $telat = $hari - 3;
+                                                if($hari != 0) {
+                                                    $telat = $hari - 3;
+                                                } else {
+                                                    $telat = 0;
+                                                }
 
                                                 $denda = $hari > 3 ? ($telat * $res->buku->jenis_buku->denda) : 0;
                                             @endphp    
@@ -97,7 +101,7 @@
                                                 @endif
                                                 
                                                 @if (!empty($res->tgl_kembali))
-                                                    <td class="text-center">{{$hari - 3}} Hari / {{rupiah($denda)}}</td>
+                                                    <td class="text-center">{{$telat}} Hari / {{rupiah($denda)}}</td>
                                                 @else    
                                                     <td class="text-center">Belum ada perhitungan</td>
                                                 @endif
@@ -172,7 +176,7 @@
                         <div class="col-md-6">
                             <label class="mb-2">Tanggal Kembali</label>
                             <div class="form-group">
-                                <input type="text" class="form-control datepicker" id="tgl_kembali" name="tgl_kembali" value="{{ date('Y-m-d', strtotime(Carbon\Carbon::today()->addDays(3)->toDateString())) }}" readonly>
+                                <input type="text" class="form-control datepicker" id="tgl_kembali" name="tgl_kembali" value="{{ date('Y-m-d', strtotime(Carbon\Carbon::today()->toDateString())) }}" readonly>
                             </div>        
                         </div>
                     </div>
